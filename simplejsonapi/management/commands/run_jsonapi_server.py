@@ -27,6 +27,7 @@ class Command(NoArgsCommand):
         make_option('--host', dest='host', default='127.0.0.1',),
         make_option('--port', dest='port', default=5656, type='int'),
     )
+
     def handle_noargs(self, host, port, **options):
         logger = get_logger()
         server = ApiServer((host, port), ApiHandler)
