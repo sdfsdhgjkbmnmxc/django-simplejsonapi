@@ -21,12 +21,14 @@ Run:
 
 Try
 ```python
->>> imort urllib2
+>>> import urllib2
 >>> from django.utils import simplejson
->>> urllib2.urlopen('127.0.0.1:5656', simplejson.dumps({"action": "ping", "params": {}})).read()
+>>> data = simplejson.dumps({"action": "ping", "params": {}})
+>>> content = urllib2.urlopen('127.0.0.1:5656', data).read()
+>>> simplejson.loads(content)
+{u'_time': u'0.0004', u'result': u'pong'}
 
 ```
-
 
 Usage in any always imported python file:
 ```python 
