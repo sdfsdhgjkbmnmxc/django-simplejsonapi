@@ -12,4 +12,5 @@ setup(
     packages=[
         'simplejsonapi',
     ],
+    install_requires=open('requirements.txt').readlines(),
 )

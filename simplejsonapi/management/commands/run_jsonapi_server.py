@@ -12,7 +12,8 @@ import traceback
 from django import db
 from django.core.mail import mail_admins
 from django.core.management.base import NoArgsCommand
-from django.utils import simplejson
+from django.conf import settings
+import ujson
 
 from simplejsonapi import ACTIONS_DICT
 from simplejsonapi.errors import JsonApiError
@@ -68,8 +69,8 @@ class ApiHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def api_handle(self, request_input):
         content = jshandle(request_input)
         self.send_response(200)
-        self.send_header("Content - type", 'text/html')
-        self.send_header("Content - Length", str(len(content)))
+        self.send_header("content-type", 'text/html')
+        self.send_header("content-length", str(len(content)))
         self.end_headers()
         self.wfile.write(content)
 
@@ -120,15 +121,14 @@ def jshandle(jsrequest):
         }
     except Exception, e:
         logger.error('System error: %s', traceback.format_exc())
-        mail_admins('Opossum api error at %s' % start, '\n'.join([
-            jsrequest,
-            traceback.format_exc()
-        ]))
         pyresponse = {
             'error': 'SYSTEM_ERROR',
             'details': unicode(e),
             '_time': TIME_FORMAT % (time.time() - start),
         }
+        if settings.DEBUG:
+            pyresponse['_debug'] = traceback.format_exc()
+
     jsresponse = compose_json(pyresponse)
     logger.info('api response [%s]: %s', transaction_id, jsresponse)
 
@@ -142,14 +142,14 @@ def jshandle(jsrequest):
 
 def parse_json(s):
     try:
-        return simplejson.loads(s)
+        return ujson.loads(s)
     except Exception, e:
         raise JsonApiError('PARSE_JSON_ERROR', unicode(e))
 
 
 def compose_json(data):
     try:
-        return simplejson.dumps(data)
+        return ujson.dumps(data)
     except Exception, e:
         logger.error('compose_json(%r) error: %s', data, traceback.format_exc())
         return (

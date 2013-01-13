@@ -24,7 +24,7 @@ Try
 >>> import urllib2
 >>> from django.utils import simplejson
 >>> data = simplejson.dumps({"action": "ping", "params": {}})
->>> content = urllib2.urlopen('127.0.0.1:5656', data).read()
+>>> content = urllib2.urlopen('http://127.0.0.1:5656', data).read()
 >>> simplejson.loads(content)
 {u'_time': u'0.0004', u'result': u'pong'}
 
